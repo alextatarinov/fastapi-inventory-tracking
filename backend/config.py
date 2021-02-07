@@ -1,15 +1,8 @@
-import os
-from dataclasses import dataclass
-from functools import lru_cache
+from starlette.config import Config
+from starlette.datastructures import Secret
 
 
-@dataclass
-class Config:
-    DATABASE_URL: str
+config = Config('.env')
 
-
-@lru_cache
-def get_config() -> Config:
-    return Config(
-        os.environ['DATABASE_URL']
-    )
+SECRET_KEY = config('SECRET_KEY', cast=Secret)
+DATABASE_URL = config('DATABASE_URL', cast=Secret)

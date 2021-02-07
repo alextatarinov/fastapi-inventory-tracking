@@ -39,8 +39,6 @@
 
 ## Running
 
-Provide DATABASE_URL as env variable for the backend in the following format
-`postgresql+asyncpg://user:password@host/db_name`
-
+Create backend/.env file with SECRET_KEY and DATABASE_URL
 `cd frontend && npm run serve`  
 `cd backend && uvicorn app.main:app --reload`
