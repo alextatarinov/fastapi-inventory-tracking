@@ -1,0 +1,6 @@
+fastapi~=0.63
+uvicorn~=0.13
+pydantic~=1.7
+asyncpg~=0.21
+SQLAlchemy~=1.4.0b2
+
