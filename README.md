@@ -1,4 +1,4 @@
-# Inventory tracking system design document
+# Inventory tracking system
 
 ## Functionality (annotated with MoSCoW priority)
 
@@ -27,6 +27,20 @@
 ### Register (W) - accounts will be created manually by system administrator
 
 ## Technology used
+
 - FastAPI - async web framework with pydantic for validation
 - PostgreSQL + SQLAlchemy
 - Vue.js for the frontend
+
+## Installing dependencies
+
+`pip install -r requirements.txt`
+`cd frontend && npm install`
+
+## Running
+
+Provide DATABASE_URL as env variable for the backend in the following format
+`postgresql+asyncpg://user:password@host/db_name`
+
+`cd frontend && npm run serve`  
+`cd backend && uvicorn app.main:app --reload`
