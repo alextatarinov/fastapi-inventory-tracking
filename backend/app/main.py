@@ -1,13 +1,17 @@
+from typing import List
+
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
 from starlette import status
 
-from app.auth.access import authenticate_user
+from app import services
+from app.auth.access import authenticate_user, get_current_user
 from app.auth.core import create_access_token
 from app.database import engine, get_db
 from app.models import Base
+from app.schemas import InventoryItemSchema, InventoryItemCreateSchema, InventoryItemUpdateSchema
 from config import ACCESS_TOKEN_LIFETIME
-
 
 app = FastAPI()
 
@@ -29,3 +33,37 @@ async def get_access_token(form_data=Depends(OAuth2PasswordRequestForm), db=Depe
 
     access_token = create_access_token(user, lifetime=ACCESS_TOKEN_LIFETIME)
     return {'access_token': access_token}
+
+
+@app.get('/items', response_model=List[InventoryItemSchema])
+async def list_items(
+        db=Depends(get_db),
+        user=Depends(get_current_user),
+):
+    return await services.get_items(db, user)
+
+
+@app.post('/items', response_model=InventoryItemSchema)
+async def add_item(
+        item: InventoryItemCreateSchema,
+        db=Depends(get_db),
+        user=Depends(get_current_user),
+):
+    return await services.create_item(db, user, item)
+
+
+@app.patch('/items/{item_id}', response_model=InventoryItemSchema)
+async def edit_item(
+        item_id: int,
+        item: InventoryItemUpdateSchema,
+        db: Session = Depends(get_db),
+        user=Depends(get_current_user),
+):
+    db_item = await services.get_item(db, user, item_id)
+    if db_item is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Invalid item_id specified',
+        )
+
+    return await services.update_item(db, db_item, item)

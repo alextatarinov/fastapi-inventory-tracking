@@ -8,7 +8,7 @@ from starlette import status
 from app.auth.core import ALGORITHM, oauth2_scheme, verify_password
 from app.database import get_db
 from app.models import User
-from app.repository import get_user
+from app.services import get_user
 from config import SECRET_KEY
 
 
