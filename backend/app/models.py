@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Column, ForeignKey, Integer, String
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Integer, String, UniqueConstraint
 
 from app.database import Base
 
@@ -15,7 +15,7 @@ class InventoryItem(Base):
     __tablename__ = 'inventory_items'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String)
     manufacturer = Column(String)
     quantity = Column(Integer)
     threshold = Column(Integer, nullable=True)
@@ -25,4 +25,5 @@ class InventoryItem(Base):
     __table_args__ = (
         CheckConstraint(quantity >= 0, name='check_quantity_non_negative'),
         CheckConstraint(threshold > 0, name='check_threshold_positive'),
+        UniqueConstraint('user_id', 'name', name='name_unique_per_user'),
     )
