@@ -9,7 +9,7 @@ from app import services
 from app.auth.access import authenticate_user, get_current_user
 from app.auth.core import create_access_token
 from app.database import engine, get_db
-from app.models import Base
+from app.models import Base, InventoryItem
 from app.schemas import InventoryItemSchema, InventoryItemCreateSchema, InventoryItemUpdateSchema
 from config import ACCESS_TOKEN_LIFETIME
 
@@ -69,3 +69,28 @@ async def edit_item(
         )
 
     return await services.update_item(db, db_item, **item.dict(exclude_unset=True))
+
+
+@app.post('/items/{item_id}/change_quantity', response_model=InventoryItemSchema)
+async def change_item_quantity(
+        item_id: int,
+        quantity_change: int,
+        db: Session = Depends(get_db),
+        user=Depends(get_current_user),
+):
+    db_item = await services.get_item(db, user, item_id)
+    if db_item is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Invalid item_id specified',
+        )
+
+    if db_item.quantity + quantity_change < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Quantity cannot become negative',
+        )
+
+    await services.update_item(db, db_item, quantity=InventoryItem.quantity + quantity_change)
+    # Fetch again to get updated quantity from db
+    return await services.get_item(db, user, item_id)
