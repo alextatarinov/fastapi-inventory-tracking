@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -35,14 +36,20 @@ async def get_access_token(form_data=Depends(OAuth2PasswordRequestForm), db=Depe
     return {'access_token': access_token}
 
 
+class ItemsOrderBy(str, Enum):
+    name = 'name'
+    quantity = 'quantity'
+
+
 @app.get('/items', response_model=List[InventoryItemSchema])
 async def list_items(
         search: str = '',
+        order_by: ItemsOrderBy = ItemsOrderBy.name,
         below_threshold: bool = False,
         db=Depends(get_db),
         user=Depends(get_current_user),
 ):
-    return await services.get_items(db, user, search, below_threshold)
+    return await services.get_items(db, user, search, order_by, below_threshold)
 
 
 @app.post('/items', response_model=InventoryItemSchema)

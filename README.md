@@ -34,11 +34,11 @@
 
 ## Installing dependencies
 
-`pip install -r requirements.txt`
+`pip install -r requirements.txt`  
 `cd frontend && npm install`
 
 ## Running
 
-Create backend/.env file with SECRET_KEY and DATABASE_URL
+Create backend/.env file with SECRET_KEY and DATABASE_URL  
 `cd frontend && npm run serve`  
 `cd backend && uvicorn app.main:app --reload`

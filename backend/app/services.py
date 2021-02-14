@@ -19,7 +19,13 @@ async def create_user(db: Session, email: str, password) -> User:
     return db_user
 
 
-async def get_items(db: Session, user: User, search: str = '', below_threshold: bool = False) -> List[InventoryItem]:
+async def get_items(
+        db: Session,
+        user: User,
+        search: str = '',
+        order_by: str = '',
+        below_threshold: bool = False
+) -> List[InventoryItem]:
     query = select(InventoryItem).where(
         InventoryItem.user_id == user.id
     )
@@ -30,6 +36,9 @@ async def get_items(db: Session, user: User, search: str = '', below_threshold: 
                 InventoryItem.manufacturer.ilike(f'{search}%'),
             )
         )
+
+    if order_by:
+        query = query.order_by(order_by)
 
     if below_threshold:
         query = query.where(
