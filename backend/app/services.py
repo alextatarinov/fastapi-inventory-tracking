@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 from app.auth.core import get_hashed_password
 from app.models import InventoryItem, User
-from app.schemas import InventoryItemCreateSchema, InventoryItemUpdateSchema
 
 
 async def get_user(db: Session, email: str) -> User:
@@ -35,15 +34,15 @@ async def get_item(db: Session, user: User, item_id: int) -> InventoryItem:
     return (await db.execute(query)).scalar()
 
 
-async def create_item(db: Session, user: User, item: InventoryItemCreateSchema) -> InventoryItem:
-    db_item = InventoryItem(**item.dict(), user_id=user.id)
+async def create_item(db: Session, user: User, **kwargs) -> InventoryItem:
+    db_item = InventoryItem(**kwargs, user_id=user.id)
     db.add(db_item)
     await db.commit()
     return db_item
 
 
-async def update_item(db: Session, db_item: InventoryItem, item: InventoryItemUpdateSchema) -> InventoryItem:
-    for field, value in item.dict(exclude_unset=True).items():
+async def update_item(db: Session, db_item: InventoryItem, **kwargs) -> InventoryItem:
+    for field, value in kwargs.items():
         setattr(db_item, field, value)
     await db.commit()
     return db_item

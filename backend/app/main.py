@@ -49,7 +49,7 @@ async def add_item(
         db=Depends(get_db),
         user=Depends(get_current_user),
 ):
-    return await services.create_item(db, user, item)
+    return await services.create_item(db, user, **item.dict())
 
 
 @app.patch('/items/{item_id}', response_model=InventoryItemSchema)
@@ -66,4 +66,4 @@ async def edit_item(
             detail='Invalid item_id specified',
         )
 
-    return await services.update_item(db, db_item, item)
+    return await services.update_item(db, db_item, **item.dict(exclude_unset=True))
