@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
 from app.auth.core import get_hashed_password
@@ -19,10 +19,17 @@ async def create_user(db: Session, email: str, password) -> User:
     return db_user
 
 
-async def get_items(db: Session, user: User) -> List[InventoryItem]:
+async def get_items(db: Session, user: User, search: str = '') -> List[InventoryItem]:
     query = select(InventoryItem).where(
         InventoryItem.user_id == user.id
     )
+    if search:
+        query = query.where(
+            or_(
+                InventoryItem.name.ilike(f'{search}%'),
+                InventoryItem.manufacturer.ilike(f'{search}%'),
+            )
+        )
     return list((await db.execute(query)).scalars())
 
 

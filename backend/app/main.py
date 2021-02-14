@@ -37,10 +37,11 @@ async def get_access_token(form_data=Depends(OAuth2PasswordRequestForm), db=Depe
 
 @app.get('/items', response_model=List[InventoryItemSchema])
 async def list_items(
+        search: str = '',
         db=Depends(get_db),
         user=Depends(get_current_user),
 ):
-    return await services.get_items(db, user)
+    return await services.get_items(db, user, search)
 
 
 @app.post('/items', response_model=InventoryItemSchema)
