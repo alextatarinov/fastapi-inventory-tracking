@@ -24,7 +24,8 @@ async def get_items(
         user: User,
         search: str = '',
         order_by: str = '',
-        below_threshold: bool = False
+        below_threshold: bool = False,
+        hide_unavailable: bool = False,
 ) -> List[InventoryItem]:
     query = select(InventoryItem).where(
         InventoryItem.user_id == user.id
@@ -43,6 +44,11 @@ async def get_items(
     if below_threshold:
         query = query.where(
             InventoryItem.quantity < InventoryItem.threshold
+        )
+
+    if hide_unavailable:
+        query = query.where(
+            InventoryItem.quantity > 0
         )
 
     return list((await db.execute(query)).scalars())
