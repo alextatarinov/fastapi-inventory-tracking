@@ -1,6 +1,6 @@
 # Inventory tracking system
 
-## Functionality (annotated with MoSCoW priority)
+## Functionality (Must/Should/Could/Won`t)
 
 ### Login (M)
 
